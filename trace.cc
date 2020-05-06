@@ -102,7 +102,7 @@ void exitSysCall(pid_t pid, bool simple) {
   if (ret == 0 ){
     cout << ret << endl;
   } else {
-    cout << std::hex << ret <<  std::dec << endl; 
+    cout << ret << endl; 
   }
 }
 
