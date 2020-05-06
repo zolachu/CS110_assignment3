@@ -146,7 +146,8 @@ int main(int argc, char *argv[]) {
 
     if(WIFEXITED(status) || WIFSIGNALED(status)) break;
 
-    if(WIFSTOPPED(status) && (WSTOPSIG(status) == (SIGTRAP|0x80))) {
+    if(WIFSTOPPED(status)) {
+      if (WSTOPSIG(status) == (SIGTRAP|0x80)) {
 	enterSysCall(pid, retval, simple);
 	ptrace(PTRACE_SYSCALL, pid, 0, 0);
 
@@ -157,12 +158,14 @@ int main(int argc, char *argv[]) {
 
 	if(WIFEXITED(status1) || WIFSIGNALED(status1)) break;
 
-	if(WIFSTOPPED(status1) && (WSTOPSIG(status1) == (SIGTRAP|0x80))) {
-	  exitSysCall(pid, simple);
+	if(WIFSTOPPED(status1)) {
+	  if(WSTOPSIG(status1) == (SIGTRAP|0x80))
+	    exitSysCall(pid, simple);
 	  ptrace(PTRACE_SYSCALL, pid, 0, 0);
 	}
       }
       ptrace(PTRACE_SYSCALL, pid, 0, 0);
+    }
   }
   cout << "= <no return>" << endl;
   cout << "Program exited normally with status " << retval << endl;
