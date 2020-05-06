@@ -75,7 +75,7 @@ void enterSysCall(pid_t pid, long& retval, bool simple) {
       }
       default: { 
 	long retval = ptrace(PTRACE_PEEKUSER, pid, registers[index] * sizeof(long));
-	(retval == 0) ? (cout << "NULL") :  (cout << "0x" << std::hex << retval << std::dec);
+	(retval == 0) ? (cout << "NULL") :  (cout << retval);
 	break;
       }
 
