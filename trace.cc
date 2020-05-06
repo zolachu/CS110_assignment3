@@ -102,7 +102,7 @@ void exitSysCall(pid_t pid, bool simple) {
   //  cout << retval << endl;
   //  return;
   // }
-  cout << std::hex << retval<<  std::dec << endl;
+  cout << "0x" << std::hex << retval<<  std::dec << endl;
 }
 
 
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
       ptrace(PTRACE_SYSCALL, pid, 0, 0);
   }
   cout << "= <no return>" << endl;
-  cout << "Program exited normally with status " << "0x" << retval << endl;
+  cout << "Program exited normally with status " << retval << endl;
 
   return 0;
 }
