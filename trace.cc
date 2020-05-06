@@ -99,19 +99,10 @@ void exitSysCall(pid_t pid, bool simple) {
     return;
   }
 
-  //  if (ret == 0) {
-  //  cout << "0" << endl;
-  //  return;
-  // }
-  //  if(retval <= INT_MAX){
-  //  cout << retval << endl;
-  //  return;
-  // }
-  //  cout << "0x" << std::hex << ret <<  std::dec << endl;
   if (ret == 0 ){
     cout << ret << endl;
   } else {
-    cout << "0x" << std::hex << ret <<  std::dec << endl; 
+    cout << std::hex << ret <<  std::dec << endl; 
   }
 }
 
