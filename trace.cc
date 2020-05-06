@@ -98,6 +98,11 @@ void exitSysCall(pid_t pid, bool simple) {
     cout << "-1"  << " " << errorConstants[abs(retval)] << " (" << strerror(abs(retval)) << ")"  << endl;
     return;
   }
+
+  if (retval == 0) {
+    cout << "0" << endl;
+    return;
+  }
   //  if(retval <= INT_MAX){
   //  cout << retval << endl;
   //  return;
