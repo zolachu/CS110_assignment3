@@ -12,6 +12,8 @@
 
 #include <cassert>
 #include <iostream>
+#include <stdio.h>
+#include <string.h>
 #include <map>
 #include <set>
 #include <unistd.h> // for fork, execvp
@@ -47,14 +49,15 @@ static string readString(pid_t pid, unsigned long addr) { // addr is a char * re
   return str;
 }
 
-void enterSysCall(pid_t pid, long& retval, bool simple) {
+void enterSysCall(pid_t pid, long& retval, bool simple, string& sysCallNumber) {
 
   int num = ptrace(PTRACE_PEEKUSER, pid, ORIG_RAX * sizeof(long));
   if (simple) {
     cout <<  "syscall(" << num << ") ";
   } else {
-    string sysCallNumber = systemCallNumbers[num];
+    sysCallNumber = systemCallNumbers[num];
     cout << sysCallNumber << "(";
+
     std::vector<scParamType> signatures =  systemCallSignatures[sysCallNumber];
     std::vector<scParamType>::iterator iter;
     for (iter = signatures.begin(); iter != signatures.end(); iter++) {
@@ -87,7 +90,7 @@ void enterSysCall(pid_t pid, long& retval, bool simple) {
   }
 }
 
-void exitSysCall(pid_t pid, bool simple) {
+void exitSysCall(pid_t pid, bool simple, string sysCallNumber) {
   long ret = ptrace(PTRACE_PEEKUSER, pid, RAX * sizeof(long));
   cout << "= ";
   if (simple) {
@@ -99,11 +102,15 @@ void exitSysCall(pid_t pid, bool simple) {
     return;
   }
 
-  if (ret == 0 ){
-    cout << ret << endl;
-  } else {
-    cout << ret << endl; 
+  if (sysCallNumber.compare("brk") == 0
+      || sysCallNumber.compare("sbrk") == 0
+      || sysCallNumber.compare("mmap") == 0) {
+
+    cout << "0x" << std::hex << ret << std::dec << endl;
+    return;
   }
+
+  cout << ret << endl; 
 }
 
 
@@ -148,7 +155,8 @@ int main(int argc, char *argv[]) {
 
     if(WIFSTOPPED(status)) {
       if (WSTOPSIG(status) == (SIGTRAP|0x80)) {
-	enterSysCall(pid, retval, simple);
+	string sysCallNumber = "";
+	enterSysCall(pid, retval, simple, sysCallNumber);
 	ptrace(PTRACE_SYSCALL, pid, 0, 0);
 
 	int status1;
@@ -160,7 +168,7 @@ int main(int argc, char *argv[]) {
 
 	if(WIFSTOPPED(status1)) {
 	  if(WSTOPSIG(status1) == (SIGTRAP|0x80))
-	    exitSysCall(pid, simple);
+	    exitSysCall(pid, simple, sysCallNumber);
 	  ptrace(PTRACE_SYSCALL, pid, 0, 0);
 	}
       }
