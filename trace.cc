@@ -107,7 +107,8 @@ void exitSysCall(pid_t pid, bool simple) {
   //  cout << retval << endl;
   //  return;
   // }
-  cout << "0x" << std::hex << ret <<  std::dec << endl;
+  //  cout << "0x" << std::hex << ret <<  std::dec << endl;
+  cout << ret << endl;
 }
 
 
