@@ -143,11 +143,11 @@ int main(int argc, char *argv[]) {
   assert(WIFSTOPPED(status));
   ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACESYSGOOD);
 
-  //  ptrace(PTRACE_SYSCALL, pid, 0, 0);
+  ptrace(PTRACE_SYSCALL, pid, 0, 0);
   
   long retval = 0;
   while (true) {
-    ptrace(PTRACE_SYSCALL, pid, 0, 0);
+    //ptrace(PTRACE_SYSCALL, pid, 0, 0);
     int status;
     waitpid(pid, &status, 0);
 
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
       if (WSTOPSIG(status) == (SIGTRAP|0x80)) {
 	string sysCallNumber = "";
 	enterSysCall(pid, retval, simple, sysCallNumber);
-	//	ptrace(PTRACE_SYSCALL, pid, 0, 0);
+	ptrace(PTRACE_SYSCALL, pid, 0, 0);
 
 	int status1;
 	waitpid(pid, &status1, WUNTRACED);
@@ -169,10 +169,10 @@ int main(int argc, char *argv[]) {
 	if(WIFSTOPPED(status1)) {
 	  if(WSTOPSIG(status1) == (SIGTRAP|0x80))
 	    exitSysCall(pid, simple, sysCallNumber);
-	  //  ptrace(PTRACE_SYSCALL, pid, 0, 0);
+        ptrace(PTRACE_SYSCALL, pid, 0, 0);
 	}
       }
-      // ptrace(PTRACE_SYSCALL, pid, 0, 0);
+      ptrace(PTRACE_SYSCALL, pid, 0, 0);
     }
   }
   cout << "= <no return>" << endl;
