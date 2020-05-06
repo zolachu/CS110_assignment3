@@ -32,8 +32,8 @@ std::map<string, systemCallSignature> systemCallSignatures;
 static std::map<int, std::string> errorConstants;
 static int registers[] = {RDI, RSI, RDX, R10, R8, R9};
 
-static string readString(pid_t pid, unsigned long addr) {
-  string str; 
+static string readString(pid_t pid, unsigned long addr) { // addr is a char * read from an argument register via PTRACE_PEEKUSER
+  string str; // start out empty
   size_t numBytesRead = 0;
   while (true) {
     long ret = ptrace(PTRACE_PEEKDATA, pid, addr + numBytesRead);
