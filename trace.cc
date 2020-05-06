@@ -49,11 +49,11 @@ static string readString(pid_t pid, unsigned long addr) {
 
 void enterSysCall(pid_t pid, long& retval, bool simple) {
 
-  int syscall = ptrace(PTRACE_PEEKUSER, pid, ORIG_RAX * sizeof(long));
+  int num = ptrace(PTRACE_PEEKUSER, pid, ORIG_RAX * sizeof(long));
   if (simple) {
-    cout <<  "syscall(" << syscall << ") ";
+    cout <<  "syscall(" << num << ") ";
   } else {
-    string sysCallNumber = systemCallNumbers[syscall];
+    string sysCallNumber = systemCallNumbers[num];
     cout << sysCallNumber << "(";
     std::vector<scParamType> signatures =  systemCallSignatures[sysCallNumber];
     std::vector<scParamType>::iterator iter;
@@ -83,31 +83,31 @@ void enterSysCall(pid_t pid, long& retval, bool simple) {
       (iter != signatures.end() - 1) ? (cout << ", ") : (cout <<  ") ");
     }
 
-    if(syscall == systemCallNames["exit_group"]) retval = ptrace(PTRACE_PEEKUSER, pid, registers[0] * sizeof(long));
+    if(num == systemCallNames["exit_group"]) retval = ptrace(PTRACE_PEEKUSER, pid, registers[0] * sizeof(long));
   }
 }
 
 void exitSysCall(pid_t pid, bool simple) {
-  long retval = ptrace(PTRACE_PEEKUSER, pid, RAX * sizeof(long));
+  long ret = ptrace(PTRACE_PEEKUSER, pid, RAX * sizeof(long));
   cout << "= ";
   if (simple) {
-    cout << retval << endl;
+    cout << ret << endl;
     return;
   }
-  if (retval < 0) {
-    cout << "-1"  << " " << errorConstants[abs(retval)] << " (" << strerror(abs(retval)) << ")"  << endl;
+  if (ret < 0) {
+    cout << "-1"  << " " << errorConstants[abs(ret)] << " (" << strerror(abs(ret)) << ")"  << endl;
     return;
   }
 
-  if (retval == 0) {
-    cout << "0" << endl;
-    return;
-  }
+  //  if (ret == 0) {
+  //  cout << "0" << endl;
+  //  return;
+  // }
   //  if(retval <= INT_MAX){
   //  cout << retval << endl;
   //  return;
   // }
-  cout << "0x" << std::hex << retval<<  std::dec << endl;
+  cout << "0x" << std::hex << ret <<  std::dec << endl;
 }
 
 
