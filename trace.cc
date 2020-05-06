@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
       ptrace(PTRACE_SYSCALL, pid, 0, 0);
   }
   cout << "= <no return>" << endl;
-  cout << "Program exited normally with status " << retval << endl;
+  cout << "Program exited normally with status " << "0x" << retval << endl;
 
   return 0;
 }
